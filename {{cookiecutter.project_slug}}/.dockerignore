@@ -1,0 +1,6 @@
+*
+!{{cookiecutter.project_slug}}
+!manage.py
+!pyproject.toml
+!poetry.lock
+!.env

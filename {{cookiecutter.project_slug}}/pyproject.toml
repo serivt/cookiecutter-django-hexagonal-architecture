@@ -1,0 +1,110 @@
+[tool.poetry]
+name = "data-analysis"
+version = "0.3.0"
+description = "Data analysis for Simetrik's no code/low code"
+authors = ["Simetrik"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^4.2.0"
+djangorestframework = "^3.14"
+django-environ = "^0.9.0"
+pydantic = "^1.10.2"
+mediatr = "^1.3.2"
+dependency-injector = "^4.41.0"
+
+[tool.poetry.group.code-quality]
+optional = true
+
+[tool.poetry.group.code-quality.dependencies]
+isort = "^5.10.1"
+black = "^22.10.0"
+mypy = "<1.1"
+django-stubs = {extras = ["compatible-mypy"], version = "^1.15.0"}
+djangorestframework = {extras = ["compatible-mypy"], version = "^3.14.0"}
+
+[tool.poetry.group.postgres.dependencies]
+psycopg2 = "^2.9.5"
+
+[tool.poetry.group.debug]
+optional = true
+
+[tool.poetry.group.debug.dependencies]
+ipython = "^8.16.1"
+debugpy = "^1.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+disallow_untyped_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
+exclude = [
+  "migrations/",
+  "venv/",
+]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "{{cookiecutter.project_slug}}.shared.infrastructure.django.settings"
+
+[[tool.mypy.overrides]]
+module = [
+  "environ",
+  "mediatr",
+  "rest_framework.*",
+]
+ignore_missing_imports = true
+
+[tool.black]
+line-length = 119
+extend-exclude = '''
+/(
+  | migrations
+  | venv/
+)/
+'''
+
+[tool.isort]
+skip_glob = [
+  "**/migrations/*",
+  "**/venv/*",
+  "**/.venv/*",
+]
+profile = "black"
+multi_line_output = 3
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 119
+skip = "migrations"
+default_section = "THIRDPARTY"
+known_django = "django"
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]
+combine_as_imports = true
+include_trailing_comma = true
+not_skip = "__init__.py"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "{{cookiecutter.project_slug}}.shared.infrastructure.django.settings"
+python_files = [
+  "tests.py",
+  "*_tests.py",
+  "test_*.py",
+  "tests/__init__.py"
+]
+addopts = "-p no:warnings --strict-markers --no-migrations"
+norecursedirs = "venv build dist .egg */migrations/"
+markers = [
+  "integration: Mark the tests as integration tests",
+  "unit: Mark the tests as unit tests",
+]
+
+[tool.coverage.run]
+omit = [
+  "*/migrations/*",
+  "*/tests.py",
+  "*/tests/*"
+]
